@@ -5,7 +5,7 @@ import org.http4s.Uri
 import scalatags.Text.TypedTag
 import scalatags.Text.all._
 
-trait DefaultPageTemplate extends PageTemplate {
+trait BootstrapPageTemplate extends PageTemplate {
   override protected def template(page: Page): TypedTag[String] = {
     val newPage = page
       .withStylesheets(List(

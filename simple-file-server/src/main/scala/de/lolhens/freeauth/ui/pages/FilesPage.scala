@@ -8,7 +8,7 @@ import org.http4s.Uri
 import scalatags.Text
 import scalatags.Text.all._
 
-object FilesPage extends DefaultPageTemplate {
+object FilesPage extends BootstrapPageTemplate {
 
   case class FileType(name: String, iconName: String, extensions: List[String])
 
@@ -115,7 +115,7 @@ object FilesPage extends DefaultPageTemplate {
               val fileName = FileStore.store.showPath(file).get
               val fileSize = Files.size(file)
 
-              tr(`class` := "stretched-link-container",
+              tr(`class` := "stretched-link-container", // TODO: doesn't work on safari. only ios?
                 td(
                   i(`class` := s"fa ${fileType.iconName}"),
                   span(`class` := "ml-2",
