@@ -115,19 +115,19 @@ object FilesPage extends BootstrapPageTemplate {
               val fileName = FileStore.store.showPath(file).get
               val fileSize = Files.size(file)
 
-              tr(`class` := "stretched-link-container", // TODO: doesn't work on safari. only ios?
-                td(
+              tr(
+                td(`class` := "p-0", div(`class` := "stretched-link-container p-2",
                   i(`class` := s"fa ${fileType.iconName}"),
-                  span(`class` := "ml-2",
-                    a(
-                      `class` := "stretched-link",
-                      href := "/" + fileName,
-                      fileName
-                    )
-                  )
-                ),
-                td(fileType.name),
-                td(sizeString(fileSize))
+                  span(`class` := "ml-2", a(`class` := "stretched-link", href := "/" + fileName, fileName))
+                )),
+                td(`class` := "p-0", div(`class` := "stretched-link-container p-2",
+                  a(`class` := "stretched-link", href := "/" + fileName),
+                  fileType.name
+                )),
+                td(`class` := "p-0", div(`class` := "stretched-link-container p-2",
+                  a(`class` := "stretched-link", href := "/" + fileName),
+                  sizeString(fileSize)
+                ))
               )
             }
           )
