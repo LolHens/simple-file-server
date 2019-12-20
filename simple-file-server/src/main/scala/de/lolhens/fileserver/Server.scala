@@ -1,7 +1,7 @@
-package de.lolhens.freeauth
+package de.lolhens.fileserver
 
-import de.lolhens.freeauth.Server._
-import de.lolhens.freeauth.ui.Routes
+import de.lolhens.fileserver.Server._
+import de.lolhens.fileserver.ui.Routes
 import monix.eval.Task
 import org.http4s._
 import org.http4s.implicits._

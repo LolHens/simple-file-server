@@ -1,4 +1,4 @@
-package de.lolhens.freeauth
+package de.lolhens.fileserver
 
 import cats.effect.ExitCode
 import monix.eval.{Task, TaskApp}

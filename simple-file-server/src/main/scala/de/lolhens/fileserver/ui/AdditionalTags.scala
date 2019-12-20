@@ -1,4 +1,4 @@
-package de.lolhens.freeauth.ui
+package de.lolhens.fileserver.ui
 
 import org.http4s.Uri
 import scalatags.Text.all._

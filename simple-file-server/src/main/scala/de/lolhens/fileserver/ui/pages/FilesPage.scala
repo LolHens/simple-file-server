@@ -1,9 +1,9 @@
-package de.lolhens.freeauth.ui.pages
+package de.lolhens.fileserver.ui.pages
 
 import java.nio.file.{Files, Path}
 
-import de.lolhens.freeauth.ui.FileStore
-import de.lolhens.freeauth.ui.pages.PageTemplate.Page
+import de.lolhens.fileserver.ui.FileStore
+import de.lolhens.fileserver.ui.pages.PageTemplate.Page
 import org.http4s.Uri
 import scalatags.Text
 import scalatags.Text.all._

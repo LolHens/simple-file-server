@@ -1,6 +1,6 @@
-package de.lolhens.freeauth.ui.pages
+package de.lolhens.fileserver.ui.pages
 
-import de.lolhens.freeauth.ui.pages.PageTemplate.{Javascript, Page, Stylesheet}
+import de.lolhens.fileserver.ui.pages.PageTemplate.{Javascript, Page, Stylesheet}
 import org.http4s.Uri
 import scalatags.Text.TypedTag
 import scalatags.Text.all._

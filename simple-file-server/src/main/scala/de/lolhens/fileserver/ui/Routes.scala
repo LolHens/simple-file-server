@@ -1,9 +1,9 @@
-package de.lolhens.freeauth.ui
+package de.lolhens.fileserver.ui
 
 import java.nio.file.{Files, Path, Paths}
 
-import de.lolhens.freeauth.ui.FileStore._
-import de.lolhens.freeauth.ui.pages.FilesPage
+import de.lolhens.fileserver.ui.FileStore._
+import de.lolhens.fileserver.ui.pages.FilesPage
 import monix.eval.Task
 import monix.execution.Scheduler
 import org.http4s._
