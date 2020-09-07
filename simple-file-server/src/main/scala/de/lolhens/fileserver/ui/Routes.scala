@@ -12,25 +12,27 @@ import org.http4s.dsl.task._
 import org.http4s.headers.{`Content-Length`, `Content-Type`, `Transfer-Encoding`}
 import org.http4s.scalatags._
 
-import scala.collection.JavaConverters._
-
+import scala.jdk.CollectionConverters._
 
 class Routes {
-
   private val ioBlocker = Blocker.liftExecutionContext(Scheduler.io("files"))
 
   def collapse(path: Path): Path = {
     if (Files.isDirectory(path)) {
-      Some(Files.list(path).iterator.asScala.take(2).toList).collect {
+      Files.list(path).iterator.asScala.take(2).toList match {
         case List(child) => collapse(child)
-      }.getOrElse(path)
+        case _ => path
+      }
     } else
       path
   }
 
   def list(path: Path, collapseDirectories: Boolean = true): Iterator[Path] = {
     val filesIterator = Files.list(path).iterator.asScala
-    filesIterator.map(collapse)
+    if (collapseDirectories)
+      filesIterator.map(collapse)
+    else
+      filesIterator
   }
 
   def fileResponse(path: Path, blocker: Blocker): Task[Response[Task]] = {
@@ -51,17 +53,9 @@ class Routes {
       val filePath = store.getPath(path.toString).get
 
       if (Files.isDirectory(filePath)) {
-
         val files = list(filePath).toList
 
         Ok(FilesPage.page(request.uri, filePath, files))
-
-        /*Ok(div(
-          for (file <- files) yield {
-            val fileString = store.showPath(file).get
-            p(a(fileString, href := "/" + fileString))
-          }
-        ))*/
       } else {
         fileResponse(filePath, ioBlocker)
       }
@@ -71,7 +65,7 @@ class Routes {
 case class FileStore(rootPath: Path) {
   def getPath(path: String): Option[Path] = {
     val normalized = Paths.get(path).normalize().toString.replace("\\", "/")
-    val relative = if (normalized.startsWith("/")) normalized.drop(1) else normalized
+    val relative = normalized.dropWhile(_ == '/')
     val resolvedPath = rootPath.resolve(relative)
     if (!resolvedPath.startsWith(rootPath)) None
     else Some(resolvedPath)
@@ -84,5 +78,5 @@ case class FileStore(rootPath: Path) {
 }
 
 object FileStore {
-  val store = FileStore(Paths.get("files"))
+  val store: FileStore = FileStore(Paths.get("files"))
 }

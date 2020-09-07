@@ -15,14 +15,13 @@ object Main extends TaskApp {
     uiRoot.path -> new Routes().routes
   ).orNotFound
 
-  def startServer(host: String, port: Int): Task[Nothing] =
-    Task.deferAction { scheduler =>
-      BlazeServerBuilder.apply[Task](scheduler)
-        .bindHttp(port, host)
-        .withHttpApp(httpApp)
-        .resource
-        .use(_ => Task.never)
-    }
+  def startServer(host: String, port: Int): Task[Nothing] = Task.deferAction { scheduler =>
+    BlazeServerBuilder[Task](scheduler)
+      .bindHttp(port, host)
+      .withHttpApp(httpApp)
+      .resource
+      .use(_ => Task.never)
+  }
 
   override def run(args: List[String]): Task[ExitCode] =
     for {

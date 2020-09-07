@@ -21,7 +21,7 @@ object FilesPage extends BootstrapPageTemplate {
       "yaml",
       "toml"
     )),
-    FileType("Pdf", "fa-file-pdf-o", List(
+    FileType("PDF", "fa-file-pdf-o", List(
       "pdf"
     )),
     FileType("Word", "fa-file-word-o", List(
@@ -70,17 +70,18 @@ object FilesPage extends BootstrapPageTemplate {
     ))
   )
 
-  val regularFileType = FileType("File", "fa-file-o", List.empty)
-  val directoryType = FileType("Directory", "fa-folder-open-o", List.empty)
+  val regularFileType: FileType = FileType("File", "fa-file-o", List.empty)
+  val directoryType: FileType = FileType("Directory", "fa-folder-open-o", List.empty)
 
   def sizeString(size: Long): String = {
-    def unit(digits: Int, afterComma: Int, name: String) =
-      size / ("1" + "0" * (digits + afterComma)).toLong
-
-    if (size < 1000L) s"$size B"
-    else if (size < 1000000L) s"${(size / 10).toDouble / 100} KB"
-    else if (size < 1000000000L) s"${(size / 10000).toDouble / 100} MB"
-    else s"${(size / 10000000).toDouble / 100} GB"
+    if (size < 1_000L)
+      s"$size B"
+    else if (size < 1_000_000L)
+      s"${(size / 10).toDouble / 100} KB"
+    else if (size < 1_000_000_000L)
+      s"${(size / 10_000).toDouble / 100} MB"
+    else
+      s"${(size / 10_000_000).toDouble / 100} GB"
   }
 
   def getFileType(isFile: Boolean, extension: Option[String]): FileType = {
@@ -133,6 +134,5 @@ object FilesPage extends BootstrapPageTemplate {
           )
         )
       )
-    }
-    )
+    })
 }
