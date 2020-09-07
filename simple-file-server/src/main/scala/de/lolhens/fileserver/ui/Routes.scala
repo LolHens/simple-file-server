@@ -2,6 +2,7 @@ package de.lolhens.fileserver.ui
 
 import java.nio.file.{Files, Path, Paths}
 
+import cats.effect.Blocker
 import de.lolhens.fileserver.ui.FileStore._
 import de.lolhens.fileserver.ui.pages.FilesPage
 import monix.eval.Task
@@ -12,12 +13,11 @@ import org.http4s.headers.{`Content-Length`, `Content-Type`, `Transfer-Encoding`
 import org.http4s.scalatags._
 
 import scala.collection.JavaConverters._
-import scala.concurrent.ExecutionContext
 
 
 class Routes {
 
-  val ioPool = Scheduler.io("files")
+  private val ioBlocker = Blocker.liftExecutionContext(Scheduler.io("files"))
 
   def collapse(path: Path): Path = {
     if (Files.isDirectory(path)) {
@@ -33,8 +33,8 @@ class Routes {
     filesIterator.map(collapse)
   }
 
-  def fileResponse(path: Path, executionContext: ExecutionContext): Task[Response[Task]] = {
-    implicit val pathEncoder: EntityEncoder[Task, Path] = EntityEncoder.filePathEncoder(executionContext)
+  def fileResponse(path: Path, blocker: Blocker): Task[Response[Task]] = {
+    implicit val pathEncoder: EntityEncoder[Task, Path] = EntityEncoder.filePathEncoder(blocker)
 
     for {
       response <- Ok(path)
@@ -46,7 +46,7 @@ class Routes {
         .putHeaders(`Content-Length`.unsafeFromLong(contentLength))
   }
 
-  def routes: HttpRoutes[Task] = HttpRoutes.of {
+  val routes: HttpRoutes[Task] = HttpRoutes.of {
     case request@GET -> path =>
       val filePath = store.getPath(path.toString).get
 
@@ -63,14 +63,14 @@ class Routes {
           }
         ))*/
       } else {
-        fileResponse(filePath, ioPool)
+        fileResponse(filePath, ioBlocker)
       }
   }
 }
 
 case class FileStore(rootPath: Path) {
   def getPath(path: String): Option[Path] = {
-    val normalized = Paths.get(path).normalize().toString.replaceAll("\\\\", "/")
+    val normalized = Paths.get(path).normalize().toString.replace("\\", "/")
     val relative = if (normalized.startsWith("/")) normalized.drop(1) else normalized
     val resolvedPath = rootPath.resolve(relative)
     if (!resolvedPath.startsWith(rootPath)) None
@@ -79,7 +79,7 @@ case class FileStore(rootPath: Path) {
 
   def showPath(path: Path): Option[String] = {
     if (!path.startsWith(rootPath)) None
-    else Some(rootPath.relativize(path).toString)
+    else Some(rootPath.relativize(path).toString.replace("\\", "/"))
   }
 }
 

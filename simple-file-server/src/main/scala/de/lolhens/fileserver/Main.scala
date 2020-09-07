@@ -1,14 +1,32 @@
 package de.lolhens.fileserver
 
 import cats.effect.ExitCode
+import de.lolhens.fileserver.ui.Routes
 import monix.eval.{Task, TaskApp}
+import org.http4s._
+import org.http4s.implicits._
+import org.http4s.server.Router
+import org.http4s.server.blaze.BlazeServerBuilder
 
 object Main extends TaskApp {
-  private val server: Server = new Server()
+  val uiRoot: Uri = Uri.unsafeFromString("/")
+
+  val httpApp: HttpApp[Task] = Router(
+    uiRoot.path -> new Routes().routes
+  ).orNotFound
+
+  def startServer(host: String, port: Int): Task[Nothing] =
+    Task.deferAction { scheduler =>
+      BlazeServerBuilder.apply[Task](scheduler)
+        .bindHttp(port, host)
+        .withHttpApp(httpApp)
+        .resource
+        .use(_ => Task.never)
+    }
 
   override def run(args: List[String]): Task[ExitCode] =
     for {
-      _ <- server.startServer("0.0.0.0", 8080)
+      _ <- startServer("0.0.0.0", 8080)
     } yield
       ExitCode.Success
 }
